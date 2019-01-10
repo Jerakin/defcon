@@ -181,7 +181,7 @@ function M.start(port)
 		end
 		return s
 	end)
-
+	
 	M.register_command("help", "[command] Show help for a command", function(args)
 		local command = args[1]
 		if not command then
@@ -290,7 +290,7 @@ end
 -- @param name Optional name to use for the module. If none is provided
 -- the function will try to find the module in package.loaded and use
 -- the module filename as name
-function M.register_module(module, name)
+function M.register_module(module, name, descriptions)
 	assert(module, "You must provide a module")
 
 	-- if no name is provided then try to get it from the
@@ -309,8 +309,9 @@ function M.register_module(module, name)
 	-- add all the functions of the module as commands
 	modules[name] = module
 	for k,v in pairs(module) do
+		local description = descriptions and descriptions[k] or ""
 		if type(v) == "function" then
-			M.register_command(name .. "." .. k, "", function(args, fn)
+			M.register_command(name .. "." .. k, description, function(args, fn)
 				return { v(unpack(args)) }
 			end)
 		end
