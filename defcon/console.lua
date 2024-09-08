@@ -188,14 +188,17 @@ function M.start(port)
 	M.register_command("commands", "Show all commands", function()
 		local s = ""
 		local names = {}
+		local longest_name = 0
 		for command, command_data in pairs(commands) do
+			longest_name = math.max(#command, longest_name)
 			table.insert(names, command)
 		end
 		table.sort(names)
 
 		for _,command in pairs(names) do
 			if command:match(".*%..*") ~= command then
-				s = s .. " - " .. command .. "\n"
+				local command_data = commands[command]
+				s = s .. " - " .. string.format("%-" .. tostring(longest_name + 2) .. "s %s", command, command_data.description) .. "\n"
 			end
 		end
 		return s
