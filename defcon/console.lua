@@ -345,14 +345,14 @@ function M.register_module(module, name, descriptions)
 			local fn_ = function(args, fn)
 				return { v(unpack(args)) }
 			end
-			commands[name .. "." .. k] = { fn = fn_, description = description, source="module"}
+			commands[name .. "." .. k] = { fn = fn_, description = description, source=name}
 		end
 	end
 
 	-- add a command to list all the commands of the module
 	M.register_command(name, ("Show the available commands of the %s module"):format(name), function()
 		local s = ""
-		local data = command_names_meta("module")
+		local data = command_names_meta(name)
 		for _,name in pairs(data.names) do
 			local command_data = commands[name]
 			s = s .. format_command(name, command_data.description, data.longest)
