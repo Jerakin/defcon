@@ -1,6 +1,25 @@
-return [[
+local M = {}
+
+local _head = [[
 <html>
-<head>
+	<head>]]
+
+local _foot = [[
+	</body>
+</html>
+]]
+
+local _content = [[
+	</head>
+	<body bgcolor="#2D2F31" style="padding: 20px" onload="document.getElementById('command').focus()">
+		<div class="box">
+			<textarea onkeydown="handlekeydown(event)" id="log" readonly></textarea>
+			<input list="commands" type="text" id="command" onkeydown="handlekeydown(event)" placeholder="&gt;"/>
+			%s
+		</div>
+]]
+
+local _script = [[
 	<script type="text/javascript">
 		var command_history = [];
 		var command_index = 0;
@@ -93,6 +112,9 @@ return [[
 			}
 		}
 	</script>
+]]
+
+local _style = [[
 	<style>
 		.box {
 			display: flex;
@@ -125,12 +147,20 @@ return [[
 			outline: none;
 		}
 	</style>
-</head>
-<body bgcolor="#2D2F31" style="padding: 20px" onload="document.getElementById('command').focus()">
-	<div class="box">
-		<textarea onkeydown="handlekeydown(event)" id="log" readonly></textarea>
-		<input type="text" id="command" onkeydown="handlekeydown(event)" placeholder="&gt;"/>
-	</div>
-</body>
-</html>
 ]]
+
+function M.html(commands)
+	commands = commands or {}
+	local data_list = ""
+	if next(commands) ~= nil then
+		data_list = [[<datalist id="commands">]]
+
+		for name, _ in pairs(commands) do
+			data_list = data_list .. [[<option value="]] .. name .. [[" />]]
+		end
+		data_list = data_list .. [[</datalist>]]
+	end
+	return _head .. _script .. _style .. string.format(_content, data_list) .. _foot
+end
+
+return M
