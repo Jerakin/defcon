@@ -196,8 +196,8 @@ function M.start(port)
 		table.sort(names)
 
 		for _,command in pairs(names) do
-			if command:match(".*%..*") ~= command then
-				local command_data = commands[command]
+			local command_data = commands[command]
+			if command_data.source == "command" then
 				s = s .. " - " .. string.format("%-" .. tostring(longest_name + 2) .. "s %s", command, command_data.description) .. "\n"
 			end
 		end
@@ -302,7 +302,7 @@ function M.register_command(command, description, fn)
 	assert(command, "You must provide a command")
 	assert(description, "You must provide a command description")
 	assert(fn, "You must provide a command function")
-	commands[command] = { fn = fn, description = description }
+	commands[command] = { fn = fn, description = description, source="command"}
 end
 
 
@@ -334,9 +334,10 @@ function M.register_module(module, name, descriptions)
 	for k,v in pairs(module) do
 		local description = descriptions and descriptions[k] or ""
 		if type(v) == "function" then
-			M.register_command(name .. "." .. k, description, function(args, fn)
+			local fn_ = function(args, fn)
 				return { v(unpack(args)) }
-			end)
+			end
+			commands[name .. "." .. k] = { fn = fn_, description = description, source="module"}
 		end
 	end
 
