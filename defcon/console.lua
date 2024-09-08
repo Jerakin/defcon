@@ -116,6 +116,23 @@ local function start_log()
 	end
 end
 
+local function command_names_meta(source)
+	local names = {}
+	local longest_name = 0
+	for command, command_data in pairs(commands) do
+		if command_data.source == source then
+			longest_name = math.max(#command, longest_name)
+			table.insert(names, command)
+		end
+	end
+	table.sort(names)
+	return {names = names, longest = longest_name}
+end
+
+local function format_command(name, description, longest)
+	return " - " .. string.format("%-" .. tostring(longest + 2) .. "s %s", name, description) .. "\n"
+end
+
 local function stop_log()
 	_G.print = M.print
 	_G.pprint = M.pprint
@@ -187,19 +204,10 @@ function M.start(port)
 
 	M.register_command("commands", "Show all commands", function()
 		local s = ""
-		local names = {}
-		local longest_name = 0
-		for command, command_data in pairs(commands) do
-			longest_name = math.max(#command, longest_name)
-			table.insert(names, command)
-		end
-		table.sort(names)
-
-		for _,command in pairs(names) do
+		local data = command_names_meta("command")
+		for _,command in pairs(data.names) do
 			local command_data = commands[command]
-			if command_data.source == "command" then
-				s = s .. " - " .. string.format("%-" .. tostring(longest_name + 2) .. "s %s", command, command_data.description) .. "\n"
-			end
+			s = s .. format_command(command, command_data.description, data.longest)
 		end
 		return s
 	end)
@@ -344,10 +352,10 @@ function M.register_module(module, name, descriptions)
 	-- add a command to list all the commands of the module
 	M.register_command(name, ("Show the available commands of the %s module"):format(name), function()
 		local s = ""
-		for command,_ in pairs(commands) do
-			if command:match(name .. "%..*") == command then
-				s = s .. command .. "\n"
-			end
+		local data = command_names_meta("module")
+		for _,name in pairs(data.names) do
+			local command_data = commands[name]
+			s = s .. format_command(name, command_data.description, data.longest)
 		end
 		return s
 	end)
