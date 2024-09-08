@@ -11,7 +11,7 @@ local _foot = [[
 
 local _content = [[
 	</head>
-	<body bgcolor="#2D2F31" style="padding: 20px" onload="document.getElementById('command').focus()">
+	<body bgcolor="#2D2F31" onload="document.getElementById('command').focus()">
 		<div class="box">
 			<textarea onkeydown="handlekeydown(event)" id="log" readonly></textarea>
 			<input list="commands" type="text" id="command" onkeydown="handlekeydown(event)" placeholder="&gt;"/>
@@ -116,6 +116,9 @@ local _script = [[
 
 local _style = [[
 	<style>
+		body {
+			padding: 2px
+		}
 		.box {
 			display: flex;
 			flex-flow: column;
@@ -129,7 +132,7 @@ local _style = [[
 			padding: 15px;
 			margin: 0px;
 			color: #C5C8C6;
-			background-color: #1D1F21;
+			background-color: #222527;
 			border: none;
 			resize: none;
 			outline: none;
